@@ -29,9 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ogldev_util.h"
 #include "ogldev_pipeline.h"
 
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
+
 GLuint VBO;
 GLuint IBO;
 GLuint gWorldLocation;
+
+PersProjInfo gPersProjInfo;
 
 const char* pVSFileName = "shader.vs";
 const char* pFSFileName = "shader.fs";
@@ -172,7 +177,7 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowSize(1024, 768);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Toutorial");
 
@@ -185,14 +190,18 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	printf("GL version: %s\n", glGetString(GL_VERSION));
-
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 
 	CompileShaders();
+
+	gPersProjInfo.FOV = 30.0f;
+	gPersProjInfo.Height = WINDOW_HEIGHT;
+	gPersProjInfo.Width = WINDOW_WIDTH;
+	gPersProjInfo.zNear = 1.0f;
+	gPersProjInfo.zFar = 100.0f;
 
 	glutMainLoop();
 
