@@ -20,14 +20,13 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{215499D0-21AF-4040-8ED0-12A54A231074}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>MyOpenGL</RootNamespace>
+    <ProjectGuid>{D3B6796C-FEF5-4F56-B0D5-13F25C80FCE2}</ProjectGuid>
+    <RootNamespace>MyLibSet</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -37,20 +36,20 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -71,106 +70,82 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir)\..\..\Include;$(IncludePath)</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\assimp</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile />
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include;$(ProjectDir)\..\..\Include\assimp;$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..\..\Include\ATB;C:\VulkanSDK\1.0.30.0\Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader />
     </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ConfigurationName);$(ProjectDir)\..\..\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;Common.lib</AdditionalDependencies>
-    </Link>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Include\assimp;$(ProjectDir)Include\ATB;$(ProjectDir)Include\GL;$(ProjectDir)Include\GLFW;$(ProjectDir)Include\ImageMagick-6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <PrecompiledHeaderFile />
     </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)x64\Debug;$(ProjectDir)Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>AntTweakBar.lib;AntTweakBar64.lib;glfx.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="MyOpenGL.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shader.fs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="..\shader.vs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
+    <ClCompile Include="..\..\..\ogldev-source\Common\camera.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\cubemap_texture.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\glut_backend.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\io_buffer.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\math_3d.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_app.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_atb.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_backend.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_basic_lighting.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_basic_mesh.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_glfw_backend.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_shadow_map_fbo.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_skinned_mesh.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_texture.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_util.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_vulkan.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_vulkan_core.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_win32_control.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\ogldev_xcb_control.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\pipeline.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\random_texture.cpp" />
+    <ClCompile Include="..\..\..\ogldev-source\Common\technique.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
