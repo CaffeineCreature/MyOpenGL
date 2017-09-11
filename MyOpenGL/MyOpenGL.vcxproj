@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir)\..\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\Include;C:\Dev\myogl-source\Include\ImageMagick-6;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -94,14 +94,14 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\assimp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..\..\Include\assimp</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ConfigurationName);$(ProjectDir)\..\..\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;Common.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;CORE_DB_Magick++_.lib;Common.lib</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

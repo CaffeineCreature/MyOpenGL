@@ -30,14 +30,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ogldev_glut_backend.h"
 #include "ogldev_pipeline.h"
 #include "ogldev_camera.h"
+#include "ogldev_texture.h"
 
-#define WINDOW_WIDTH 1024
-#define WINDOW_HEIGHT 768
+#define WINDOW_WIDTH  1280
+#define WINDOW_HEIGHT 1024
+
+struct Vertex
+{
+	Vector3f m_pos;
+	Vector2f m_tex;
+
+	Vertex() {}
+
+	Vertex(Vector3f pos, Vector2f tex)
+	{
+		m_pos = pos;
+		m_tex = tex;
+	}
+};
+
 
 GLuint VBO;
 GLuint IBO;
 GLuint gWVPLocation;
-
+GLuint gSampler;
+Texture* pTexture = NULL;
 Camera* pGameCamera = NULL;
 PersProjInfo gPersProjInfo;
 
@@ -61,13 +78,16 @@ static void RenderSceneCB()
 	glUniformMatrix4fv(gWVPLocation, 1, GL_TRUE, (const GLfloat*)p.GetWVPTrans());
 
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-
+	pTexture->Bind(GL_TEXTURE0);
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	glutSwapBuffers();
 }
@@ -78,20 +98,34 @@ static void SpecialKeyboardCB(int Key, int x, int y)
 	pGameCamera->OnKeyboard(OgldevKey);
 }
 
+static void KeyboardCB(unsigned char Key, int x, int y)
+{
+	switch (Key) {
+	case 'q':
+		glutLeaveMainLoop();
+	}
+}
+
+static void PassiveMouseCB(int x, int y)
+{
+	pGameCamera->OnMouse(x, y);
+}
+
 static void InitializeGlutCallbacks()
 {
 	glutDisplayFunc(RenderSceneCB);
 	glutIdleFunc(RenderSceneCB);
 	glutSpecialFunc(SpecialKeyboardCB);
+	glutPassiveMotionFunc(PassiveMouseCB);
+	glutKeyboardFunc(KeyboardCB);
 }
 
 static void CreateVertexBuffer()
 {
-	Vector3f Vertices[4];
-	Vertices[0] = Vector3f(-1.0f, -1.0f, 0.5773f);
-	Vertices[1] = Vector3f(0.0f, -1.0f, -1.15475f);
-	Vertices[2] = Vector3f(1.0f, -1.0f, 0.5773f);
-	Vertices[3] = Vector3f(0.0f, 1.0f, 0.0f);
+	Vertex Vertices[4] = { Vertex(Vector3f(-1.0f, -1.0f, 0.5773f),	Vector2f(0.0f, 0.0f)),
+						   Vertex(Vector3f(0.0f, -1.0f, -1.15475f), Vector2f(1.0f, 0.0f)),
+						   Vertex(Vector3f(1.0f, -1.0f, 0.5773f),	Vector2f(1.0f, 1.0f)),
+						   Vertex(Vector3f(0.0f, 1.0f, 0.0f),		Vector2f(0.0f, 1.0f)) };
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -186,31 +220,45 @@ static void CompileShaders()
 
 int main(int argc, char** argv)
 {
+	//    Magick::InitializeMagick(*argv);    
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Tutorial");
+	glutGameModeString("1280x1024@32");
+	//  glutEnterGameMode();
 
 	InitializeGlutCallbacks();
 
 	pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	// Check AFTER GLUT Initialization
+	// Must be done after glut is initialized!
 	GLenum res = glewInit();
 	if (res != GLEW_OK) {
-		fprintf(stderr, "ERROR: '%s'\n", glewGetErrorString(res));
+		fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
 		return 1;
 	}
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glFrontFace(GL_CW);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 
 	CompileShaders();
 
-	gPersProjInfo.FOV = 30.0f;
+	glUniform1i(gSampler, 0);
+
+	pTexture = new Texture(GL_TEXTURE_2D, "../Content/test.png");
+
+	if (!pTexture->Load()) {
+		return 1;
+	}
+
+	gPersProjInfo.FOV = 60.0f;
 	gPersProjInfo.Height = WINDOW_HEIGHT;
 	gPersProjInfo.Width = WINDOW_WIDTH;
 	gPersProjInfo.zNear = 1.0f;
