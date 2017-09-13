@@ -21,8 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "technique.h"
 #include "ogldev_math_3d.h"
-#include "ogldev_lights_common.h"
 
+struct DirectionalLight
+{
+	Vector3f Color;
+	float AmbientIntensity;
+	Vector3f Direction;
+	float DiffuseIntensity;
+};
 
 class LightingTechnique : public Technique
 {
@@ -33,15 +39,22 @@ public:
 	virtual bool Init();
 
 	void SetWVP(const Matrix4f& WVP);
+	void SetWorldMatrix(const Matrix4f& WVP);
 	void SetTextureUnit(unsigned int TextureUnit);
 	void SetDirectionalLight(const DirectionalLight& Light);
 
 private:
 
 	GLuint m_WVPLocation;
+	GLuint m_WorldMatrixLocation;
 	GLuint m_samplerLocation;
-	GLuint m_dirLightColorLocation;
-	GLuint m_dirLightAmbientIntensityLocation;
+
+	struct {
+		GLuint Color;
+		GLuint AmbientIntensity;
+		GLuint Direction;
+		GLuint DiffuseIntensity;
+	} m_dirLightLocation;
 };
 
 
