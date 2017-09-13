@@ -94,7 +94,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..\..\Include\assimp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..\..\Include\assimp;$(ProjectDir)\..\..\Include\ATB</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
@@ -162,15 +162,22 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lighting_technique.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shader.fs">
+    <None Include="..\lighting.fs">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\shader.vs">
+    <None Include="..\lighting.vs">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\ACES.fs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lighting_technique.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
