@@ -61,9 +61,9 @@ public:
 		m_pEffect = NULL;
 		m_scale = 0.0f;
 		m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-		m_directionalLight.AmbientIntensity = 0.01f;
-		m_directionalLight.DiffuseIntensity = 0.75f;
-		m_directionalLight.AmbientIntensity = 0.5f;
+		m_directionalLight.AmbientIntensity = 0.00f;
+		m_directionalLight.DiffuseIntensity = 0.2f;
+		m_directionalLight.Direction = Vector3f(0.0f, 0.0, 1.0);
 
 		m_persProjInfo.FOV = 60.0f;
 		m_persProjInfo.Height = WINDOW_HEIGHT;
@@ -139,6 +139,9 @@ public:
 		const Matrix4f& WorldTransformation = p.GetWorldTrans();
 		m_pEffect->SetWorldMatrix(WorldTransformation);
 		m_pEffect->SetDirectionalLight(m_directionalLight);
+		m_pEffect->SetEyeWorldPos(m_pGameCamera->GetPos());
+		m_pEffect->SetMatSpecularIntensity(1.0f);
+		m_pEffect->SetMatSpecularPower(32);
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);

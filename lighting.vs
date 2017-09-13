@@ -8,7 +8,8 @@ uniform mat4 gWVP;
 uniform mat4 gWorld;
 
 out vec2 TexCoord0;
-out vec3 Normal0;
+out vec3 Normal0;                                                                   
+out vec3 WorldPos0;   
 
 void main()
 {
