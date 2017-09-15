@@ -101,7 +101,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ConfigurationName);$(ProjectDir)\..\..\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;CORE_DB_Magick++_.lib;Common.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;CORE_DB_Magick++_.lib;Common.lib;assimp.lib</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lighting_technique.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lighting_technique.h" />
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
