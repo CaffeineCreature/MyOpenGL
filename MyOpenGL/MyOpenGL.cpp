@@ -25,27 +25,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ogldev_pipeline.h"
 #include "ogldev_camera.h"
 #include "ogldev_basic_lighting.h"
+#include "shadow_map_technique.h"
 #include "ogldev_glut_backend.h"
-#include "Mesh.h"
+#include "mesh.h"
+#include "shadow_map_fbo.h"
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1200
 
 static float FieldDepth = 10.0f;
 
-class MyOpenGL : public ICallbacks
+class MyOpenGL : public ICallbacks, public OgldevApp
 {
 public: 
 
 	MyOpenGL()
 	{
+		m_pShadowMapTech = NULL;
 		m_pGameCamera = NULL;
-		m_pEffect = NULL;
+		m_pMesh = NULL;
+		m_pQuad = NULL;
 		m_scale = 0.0f;
-		m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-		m_directionalLight.AmbientIntensity = 1.0f;
-		m_directionalLight.DiffuseIntensity = 0.01f;
-		m_directionalLight.Direction = Vector3f(1.0f, -1.0, 0.0);
+
+		m_spotLight.AmbientIntensity = 0.0f;
+		m_spotLight.DiffuseIntensity = 0.9f;
+		m_spotLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
+		m_spotLight.Attenuation.Linear = 0.01f;
+		m_spotLight.Position = Vector3f(-20.0, 20.0, 5.0f);
+		m_spotLight.Direction = Vector3f(1.0f, -1.0f, 0.0f);
+		m_spotLight.Cutoff = 20.0f;
 
 		m_persProjInfo.FOV = 60.0f;
 		m_persProjInfo.Height = WINDOW_HEIGHT;
@@ -56,29 +64,34 @@ public:
 
 	~MyOpenGL()
 	{
-		delete m_pEffect;
-		delete m_pGameCamera;
-		delete m_pMesh;
+		SAFE_DELETE(m_pShadowMapTech);
+		SAFE_DELETE(m_pGameCamera);
+		SAFE_DELETE(m_pMesh);
+		SAFE_DELETE(m_pQuad);
 	}
 
 	bool Init()
 	{
-		Vector3f Pos(3.0f, 7.0f, -10.0f);
-		Vector3f Target(0.0f, -0.2f, 1.0f);
-		Vector3f Up(0.0, 1.0f, 0.0f);
-
-		m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, Pos, Target, Up);
-
-		m_pEffect = new BasicLightingTechnique();
-
-		if (!m_pEffect->Init()) {
-			printf("Error initializing the lighting technique\n");
+		if (!m_shadowMapFBO.Init(WINDOW_WIDTH, WINDOW_HEIGHT)) {
 			return false;
 		}
 
-		m_pEffect->Enable();
+		m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT/*, Pos, Target, Up*/);
 
-		m_pEffect->SetColorTextureUnit(0);
+		m_pShadowMapTech = new ShadowMapTechnique();
+
+		if (!m_pShadowMapTech->Init()) {
+			printf("Error initializing the shadow map technique\n");
+			return false;
+		}
+
+		m_pShadowMapTech->Enable();
+
+		m_pQuad = new Mesh();
+
+		if (!m_pQuad->LoadMesh("../Content/quad.obj")) {
+			return false;
+		}
 
 		m_pMesh = new Mesh();
 
@@ -92,71 +105,56 @@ public:
 
 	virtual void RenderSceneCB()
 	{
-		m_scale += 0.01f;
-
 		m_pGameCamera->OnRender();
+		m_scale += 0.05f;
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		ShadowMapPass();
+		RenderPass();
 
-		PointLight pl[2];
-		pl[0].DiffuseIntensity = 0.25f;
-		pl[0].Color = Vector3f(1.0f, 0.5f, 0.0f);
-		pl[0].Position = Vector3f(3.0f, 1.0f, FieldDepth * (cosf(m_scale) + 1.0f) / 2.0f);
-		pl[0].Attenuation.Linear = 0.1f;
-		pl[1].DiffuseIntensity = 0.25f;
-		pl[1].Color = Vector3f(0.0f, 0.5f, 1.0f);
-		pl[1].Position = Vector3f(7.0f, 1.0f, FieldDepth * (sinf(m_scale) + 1.0f) / 2.0f);
-		pl[1].Attenuation.Linear = 0.1f;
-		m_pEffect->SetPointLights(2, pl);
+		glutSwapBuffers();
+	}
+	
+	virtual void ShadowMapPass()
+	{
+		m_shadowMapFBO.BindForWriting();
 
-		SpotLight sl;
-		sl.DiffuseIntensity = 0.9f;
-		sl.Color = Vector3f(0.0f, 1.0f, 1.0f);
-		sl.Position = m_pGameCamera->GetPos();
-		sl.Direction = m_pGameCamera->GetTarget();
-		sl.Attenuation.Linear = 0.1f;
-		sl.Cutoff = 10.0f;
-
-		m_pEffect->SetSpotLights(1, &sl);
+		glClear(GL_DEPTH_BUFFER_BIT);
 
 		Pipeline p;
 		p.Scale(0.1f, 0.1f, 0.1f);
 		p.Rotate(0.0f, m_scale, 0.0f);
+		p.WorldPos(0.0f, 0.0f, 5.0f);
+		p.SetCamera(m_spotLight.Position, m_spotLight.Direction, Vector3f(0.0f, 1.0f, 0.0f));
+		p.SetPerspectiveProj(m_persProjInfo);
+		m_pShadowMapTech->SetWVP(p.GetWVPTrans());
+		m_pMesh->Render();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	virtual void RenderPass()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		m_pShadowMapTech->SetTextureUnit(0);
+		m_shadowMapFBO.BindForReading(GL_TEXTURE0);
+
+		Pipeline p;
+		p.Scale(5.0f, 5.0f, 5.0f);
 		p.WorldPos(0.0f, 0.0f, 10.0f);
 		p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
 		p.SetPerspectiveProj(m_persProjInfo);
-		m_pEffect->SetWVP(p.GetWVPTrans());
-		m_pEffect->SetWorldMatrix(p.GetWorldTrans());
-		m_pEffect->SetDirectionalLight(m_directionalLight);
-		m_pEffect->SetEyeWorldPos(m_pGameCamera->GetPos());
-		m_pEffect->SetMatSpecularIntensity(0.0f);
-		m_pEffect->SetMatSpecularPower(0);
-
-		m_pMesh->Render();
-
-		glutSwapBuffers();
+		m_pShadowMapTech->SetWVP(p.GetWVPTrans());
+		m_pQuad->Render();
 	}
-
-
 
 	void KeyboardCB(OGLDEV_KEY OgldevKey, OGLDEV_KEY_STATE State)
 	{
+
 		switch (OgldevKey) {
 		case OGLDEV_KEY_ESCAPE:
 		case OGLDEV_KEY_q:
 			GLUTBackendLeaveMainLoop();
-			break;
-		case OGLDEV_KEY_a:
-			m_directionalLight.AmbientIntensity += 0.05f;
-			break;
-		case OGLDEV_KEY_s:
-			m_directionalLight.AmbientIntensity -= 0.05f;
-			break;
-		case OGLDEV_KEY_z:
-			m_directionalLight.DiffuseIntensity += 0.05f;
-			break;
-		case OGLDEV_KEY_x:
-			m_directionalLight.DiffuseIntensity -= 0.05f;
 			break;
 		default:
 			m_pGameCamera->OnKeyboard(OgldevKey);
@@ -171,11 +169,13 @@ public:
 
 private:
 
-	BasicLightingTechnique* m_pEffect;
+	ShadowMapTechnique* m_pShadowMapTech;
 	Camera* m_pGameCamera;
 	float m_scale;
-	DirectionalLight m_directionalLight;
+	SpotLight m_spotLight;
 	Mesh* m_pMesh;
+	Mesh* m_pQuad;
+	ShadowMapFBO m_shadowMapFBO;
 	PersProjInfo m_persProjInfo;
 };
 

@@ -163,8 +163,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lighting_technique.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
+    <ClCompile Include="shadow_map_fbo.cpp" />
+    <ClCompile Include="shadow_map_technique.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lighting.fs">
@@ -176,10 +178,18 @@
     <None Include="..\ACES.fs">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\shadow_map.fs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\shadow_map.vs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lighting_technique.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="shadow_map_fbo.h" />
+    <ClInclude Include="shadow_map_technique.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

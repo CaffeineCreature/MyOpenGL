@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Mesh.h"
+
+
+#include "mesh.h"
 
 Mesh::MeshEntry::MeshEntry()
 {
@@ -179,13 +181,6 @@ bool Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
 					printf("Loaded texture '%s'\n", FullPath.c_str());
 				}
 			}
-		}
-
-		// Load a white texture in case the model does not include its own texture
-		if (!m_Textures[i]) {
-			m_Textures[i] = new Texture(GL_TEXTURE_2D, "../Content/white.png");
-
-			Ret = m_Textures[i]->Load();
 		}
 	}
 
