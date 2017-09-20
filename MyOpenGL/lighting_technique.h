@@ -20,62 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "technique.h"
 #include "ogldev_math_3d.h"
-
-struct BaseLight
-{
-	Vector3f Color;
-	float AmbientIntensity;
-	float DiffuseIntensity;
-
-	BaseLight()
-	{
-		Color = Vector3f(0.0f, 0.0f, 0.0f);
-		AmbientIntensity = 0.0f;
-		DiffuseIntensity = 0.0f;
-	}
-};
-
-struct DirectionalLight : public BaseLight
-{
-	Vector3f Direction;
-
-	DirectionalLight()
-	{
-		Direction = Vector3f(0.0f, 0.0f, 0.0f);
-	}
-};
-
-struct PointLight : public BaseLight
-{
-	Vector3f Position;
-
-	struct
-	{
-		float Constant;
-		float Linear;
-		float Exp;
-	} Attenuation;
-
-	PointLight()
-	{
-		Position = Vector3f(0.0f, 0.0f, 0.0f);
-		Attenuation.Constant = 1.0f;
-		Attenuation.Linear = 0.0f;
-		Attenuation.Exp = 0.0f;
-	}
-};
-
-struct SpotLight : public PointLight
-{
-	Vector3f Direction;
-	float Cutoff;
-
-	SpotLight()
-	{
-		Direction = Vector3f(0.0f, 0.0f, 0.0f);
-		Cutoff = 0.0f;
-	}
-};
+#include "ogldev_lights_common.h"
+#include "ogldev_shadow_map_fbo.h"
+#include "shadow_map_technique.h"
 
 class LightingTechnique : public Technique {
 public:
@@ -88,8 +35,10 @@ public:
 	virtual bool Init();
 
 	void SetWVP(const Matrix4f& WVP);
+	void SetLightWVP(const Matrix4f& LightWVP);
 	void SetWorldMatrix(const Matrix4f& WVP);
 	void SetTextureUnit(unsigned int TextureUnit);
+	void SetShadowMapTextureUnit(unsigned int TextureUnit);
 	void SetDirectionalLight(const DirectionalLight& Light);
 	void SetPointLights(unsigned int NumLights, const PointLight* pLights);
 	void SetSpotLights(unsigned int NumLights, const SpotLight* pLights);
@@ -100,8 +49,10 @@ public:
 private:
 
 	GLuint m_WVPLocation;
+	GLuint m_LightWVPLocation;
 	GLuint m_WorldMatrixLocation;
 	GLuint m_samplerLocation;
+	GLuint m_shadowMapLocation;
 	GLuint m_eyeWorldPosLocation;
 	GLuint m_matSpecularIntensityLocation;
 	GLuint m_matSpecularPowerLocation;

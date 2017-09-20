@@ -159,9 +159,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="lighting_technique.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
