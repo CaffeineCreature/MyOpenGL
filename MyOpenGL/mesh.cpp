@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mesh.h"
 
+using namespace std;
+
 Mesh::MeshEntry::MeshEntry()
 {
 	VB = INVALID_OGL_VALUE;
@@ -41,8 +43,8 @@ Mesh::MeshEntry::~MeshEntry()
 	}
 }
 
-void Mesh::MeshEntry::Init(const std::vector<Vertex>& Vertices,
-	const std::vector<unsigned int>& Indices)
+void Mesh::MeshEntry::Init(const vector<Vertex>& Vertices,
+	const vector<unsigned int>& Indices)
 {
 	NumIndices = Indices.size();
 
@@ -74,7 +76,7 @@ void Mesh::Clear()
 }
 
 
-bool Mesh::LoadMesh(const std::string& Filename)
+bool Mesh::LoadMesh(const string& Filename)
 {
 	// Release the previously loaded mesh (if it exists)
 	Clear();
@@ -82,7 +84,10 @@ bool Mesh::LoadMesh(const std::string& Filename)
 	bool Ret = false;
 	Assimp::Importer Importer;
 
-	const aiScene* pScene = Importer.ReadFile(Filename.c_str(), ASSIMP_LOAD_FLAGS);
+	const aiScene* pScene = Importer.ReadFile(Filename.c_str(), aiProcess_Triangulate |
+																aiProcess_GenSmoothNormals |
+																aiProcess_FlipUVs |
+																aiProcess_CalcTangentSpace);
 
 	if (pScene) {
 		Ret = InitFromScene(pScene, Filename);
@@ -94,7 +99,7 @@ bool Mesh::LoadMesh(const std::string& Filename)
 	return Ret;
 }
 
-bool Mesh::InitFromScene(const aiScene* pScene, const std::string& Filename)
+bool Mesh::InitFromScene(const aiScene* pScene, const string& Filename)
 {
 	m_Entries.resize(pScene->mNumMeshes);
 	m_Textures.resize(pScene->mNumMaterials);
@@ -121,10 +126,13 @@ void Mesh::InitMesh(unsigned int Index, const aiMesh* paiMesh)
 		const aiVector3D* pPos = &(paiMesh->mVertices[i]);
 		const aiVector3D* pNormal = &(paiMesh->mNormals[i]);
 		const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
+		const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
 
-		Vertex v(Vector3f(pPos->x, pPos->y, pPos->z),
+		Vertex v(
+			Vector3f(pPos->x, pPos->y, pPos->z),
 			Vector2f(pTexCoord->x, pTexCoord->y),
-			Vector3f(pNormal->x, pNormal->y, pNormal->z));
+			Vector3f(pNormal->x, pNormal->y, pNormal->z),
+			Vector3f(pTangent->x, pTangent->y, pTangent->z));
 
 		Vertices.push_back(v);
 	}
@@ -140,13 +148,13 @@ void Mesh::InitMesh(unsigned int Index, const aiMesh* paiMesh)
 	m_Entries[Index].Init(Vertices, Indices);
 }
 
-bool Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
+bool Mesh::InitMaterials(const aiScene* pScene, const string& Filename)
 {
 	// Extract the directory part from the file name
 	std::string::size_type SlashIndex = Filename.find_last_of("/");
-	std::string Dir;
+	string Dir;
 
-	if (SlashIndex == std::string::npos) {
+	if (SlashIndex == string::npos) {
 		Dir = ".";
 	}
 	else if (SlashIndex == 0) {
@@ -168,7 +176,7 @@ bool Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
 			aiString Path;
 
 			if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-				std::string FullPath = Dir + "/" + Path.data;
+				string FullPath = Dir + "/" + Path.data;
 				m_Textures[i] = new Texture(GL_TEXTURE_2D, FullPath.c_str());
 
 				if (!m_Textures[i]->Load()) {
@@ -192,12 +200,14 @@ void Mesh::Render()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 
 	for (unsigned int i = 0; i < m_Entries.size(); i++) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_Entries[i].VB);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)32);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Entries[i].IB);
 
@@ -213,4 +223,5 @@ void Mesh::Render()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
 }

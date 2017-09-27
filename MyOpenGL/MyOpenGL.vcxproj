@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir)\..\..\Include;C:\Dev\myogl-source\Include\ImageMagick-6;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\Include;$(ProjectDir)\..\..\Include\assimp;$(ProjectDir)\..\..\Include\ATB;$(ProjectDir)\..\..\Include\GL;$(ProjectDir)\..\..\Include\GLFW;$(ProjectDir)\..\..\Include\ImageMagick-6;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -162,8 +162,6 @@
     <ClCompile Include="lighting_technique.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
-    <ClCompile Include="shadow_map_fbo.cpp" />
-    <ClCompile Include="shadow_map_technique.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lighting.fs">
@@ -172,21 +170,10 @@
     <None Include="..\lighting.vs">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\ACES.fs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="..\shadow_map.fs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="..\shadow_map.vs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lighting_technique.h" />
     <ClInclude Include="mesh.h" />
-    <ClInclude Include="shadow_map_fbo.h" />
-    <ClInclude Include="shadow_map_technique.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
