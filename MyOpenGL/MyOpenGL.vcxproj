@@ -159,21 +159,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lighting_technique.cpp" />
+    <ClCompile Include="billboard_list.cpp" />
+    <ClCompile Include="billboard_technique.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\lighting.fs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="..\lighting.vs">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
+    <ClInclude Include="billboard_list.h" />
+    <ClInclude Include="billboard_technique.h" />
+    <ClInclude Include="mesh.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lighting_technique.h" />
-    <ClInclude Include="mesh.h" />
+    <None Include="..\billboard.fs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\billboard.gs" />
+    <None Include="..\billboard.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

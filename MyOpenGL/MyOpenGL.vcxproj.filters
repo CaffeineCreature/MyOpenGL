@@ -24,24 +24,33 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lighting_technique.cpp">
+    <ClCompile Include="billboard_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\lighting.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\lighting.fs">
-      <Filter>Shaders</Filter>
-    </None>
+    <ClCompile Include="billboard_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lighting_technique.h">
+    <ClInclude Include="billboard_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="billboard_technique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\billboard.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\billboard.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\billboard.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
