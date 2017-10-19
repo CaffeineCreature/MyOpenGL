@@ -1,11 +1,12 @@
-#version 330                                                                        
+#version 430                                                                        
                                                                                     
 layout(points) in;                                                                  
 layout(triangle_strip) out;                                                         
 layout(max_vertices = 4) out;                                                       
                                                                                     
 uniform mat4 gVP;                                                                   
-uniform vec3 gCameraPos;                                                            
+uniform vec3 gCameraPos;
+uniform float gBillboardSize;
                                                                                     
 out vec2 TexCoord;                                                                  
                                                                                     
@@ -21,18 +22,18 @@ void main()
     TexCoord = vec2(0.0, 0.0);                                                      
     EmitVertex();                                                                   
                                                                                     
-    Pos.y += 1.0;                                                                   
+    Pos.y += gBillboardSize;
     gl_Position = gVP * vec4(Pos, 1.0);                                             
     TexCoord = vec2(0.0, 1.0);                                                      
     EmitVertex();                                                                   
                                                                                     
-    Pos.y -= 1.0;                                                                   
-    Pos += right;                                                                   
+    Pos.y -= gBillboardSize;                                                                   
+    Pos += right*gBillboardSize;                                                                 
     gl_Position = gVP * vec4(Pos, 1.0);                                             
     TexCoord = vec2(1.0, 0.0);                                                      
     EmitVertex();                                                                   
                                                                                     
-    Pos.y += 1.0;                                                                   
+    Pos.y += gBillboardSize;                                                                   
     gl_Position = gVP * vec4(Pos, 1.0);                                             
     TexCoord = vec2(1.0, 1.0);                                                      
     EmitVertex();                                                                   

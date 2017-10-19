@@ -16,31 +16,27 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BILLBOARD_LIST_H
-#define	BILLBOARD_LIST_H
+#ifndef RANDOM_TEXTURE_H
+#define	RANDOM_TEXTURE_H
 
-#include <string>
+#include <GL/glew.h>
 
-#include "ogldev_texture.h"
-#include "billboard_technique.h"
-
-class BillboardList
+class RandomTexture
 {
 public:
-	BillboardList();
-	~BillboardList();
+	RandomTexture();
 
-	bool Init(const std::string& TexFilename);
+	~RandomTexture();
 
-	void Render(const Matrix4f& VP, const Vector3f& CamerPos);
+	bool InitRandomTexture(unsigned int Size);
+
+	void Bind(GLenum TextureUnit);
 
 private:
-	void CreatePositionBuffer();
-
-	GLuint m_VB;
-	Texture* m_pTexture;
-	BillboardTechnique m_technique;
+	GLuint m_textureObj;
 };
 
 
-#endif
+
+#endif	/* RANDOM_TEXTURE_H */
+

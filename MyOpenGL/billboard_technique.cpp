@@ -15,8 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ogldev_util.h"
 #include "billboard_technique.h"
+#include "ogldev_util.h"
+
+
 
 
 BillboardTechnique::BillboardTechnique()
@@ -42,21 +44,26 @@ bool BillboardTechnique::Init()
 		return false;
 	}
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFuncSeparatei(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ONE, GL_ONE);
+
 	if (!Finalize()) {
 		return false;
 	}
-
+	
 	m_VPLocation = GetUniformLocation("gVP");
 	m_cameraPosLocation = GetUniformLocation("gCameraPos");
+	m_billboardSizeLocation = GetUniformLocation("gBillboardSize");
 	m_colorMapLocation = GetUniformLocation("gColorMap");
 
 	if (m_VPLocation == INVALID_UNIFORM_LOCATION ||
 		m_cameraPosLocation == INVALID_UNIFORM_LOCATION ||
+		m_billboardSizeLocation == INVALID_UNIFORM_LOCATION ||
 		m_colorMapLocation == INVALID_UNIFORM_LOCATION) {
 		return false;
 	}
-
-	return true;
+	return GLCheckError();
 }
 
 
@@ -75,4 +82,10 @@ void BillboardTechnique::SetCameraPosition(const Vector3f& Pos)
 void BillboardTechnique::SetColorTextureUnit(unsigned int TextureUnit)
 {
 	glUniform1i(m_colorMapLocation, TextureUnit);
+}
+
+
+void BillboardTechnique::SetBillboardSize(float BillboardSize)
+{
+	glUniform1f(m_billboardSizeLocation, BillboardSize);
 }

@@ -1,4 +1,4 @@
-#version 330                                                                        
+#version 430                                                                        
                                                                                     
 uniform sampler2D gColorMap;                                                        
                                                                                     
@@ -9,7 +9,7 @@ void main()
 {                                                                                   
     FragColor = texture2D(gColorMap, TexCoord);                                     
                                                                                     
-    if (FragColor.r == 0 && FragColor.g == 0 && FragColor.b == 0) {
+    if (FragColor.a <= 0.0) {           
         discard;                                                                    
-    }                                                                               
+    }
 }

@@ -1,4 +1,5 @@
 /*
+
 Copyright 2011 Etay Meiri
 
 This program is free software: you can redistribute it and/or modify
@@ -15,32 +16,41 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BILLBOARD_TECHNIQUE_H
-#define	BILLBOARD_TECHNIQUE_H
+#ifndef PS_UPDATE_TECHNIQUE_H
+#define	PS_UPDATE_TECHNIQUE_H
 
 #include "technique.h"
-#include "ogldev_math_3d.h"
 
-class BillboardTechnique : public Technique
+class PSUpdateTechnique : public Technique
 {
 public:
-
-	BillboardTechnique();
+	PSUpdateTechnique();
 
 	virtual bool Init();
 
-	void SetVP(const Matrix4f& VP);
-	void SetCameraPosition(const Vector3f& Pos);
-	void SetColorTextureUnit(unsigned int TextureUnit);
-	void SetBillboardSize(float BillboardSize);
+	void SetParticleLifetime(float Lifetime);
+
+	void SetDeltaTimeMillis(unsigned int DeltaTimeMillis);
+
+	void SetTime(int Time);
+
+	void SetRandomTextureUnit(unsigned int TextureUnit);
+
+	void SetLauncherLifetime(float Lifetime);
+
+	void SetShellLifetime(float Lifetime);
+
+	void SetSecondaryShellLifetime(float Lifetime);
 
 private:
-
-	GLuint m_VPLocation;
-	GLuint m_cameraPosLocation;
-	GLuint m_colorMapLocation;
-	GLuint m_billboardSizeLocation;
+	GLuint m_deltaTimeMillisLocation;
+	GLuint m_randomTextureLocation;
+	GLuint m_timeLocation;
+	GLuint m_launcherLifetimeLocation;
+	GLuint m_shellLifetimeLocation;
+	GLuint m_secondaryShellLifetimeLocation;
 };
 
-#endif	/* BILLBOARD_TECHNIQUE_H */
+
+#endif	/* PS_UPDATE_TECHNIQUE_H */
 

@@ -18,8 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-#include "mesh.h"
 #include "ogldev_engine_common.h"
+#include "mesh.h"
+
 
 Mesh::MeshEntry::MeshEntry()
 {
@@ -42,7 +43,7 @@ Mesh::MeshEntry::~MeshEntry()
 	}
 }
 
-void Mesh::MeshEntry::Init(const std::vector<Vertex>& Vertices,
+bool Mesh::MeshEntry::Init(const std::vector<Vertex>& Vertices,
 	const std::vector<unsigned int>& Indices)
 {
 	NumIndices = Indices.size();
@@ -54,6 +55,8 @@ void Mesh::MeshEntry::Init(const std::vector<Vertex>& Vertices,
 	glGenBuffers(1, &IB);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * NumIndices, &Indices[0], GL_STATIC_DRAW);
+
+	return GLCheckError();
 }
 
 Mesh::Mesh()
@@ -83,16 +86,15 @@ bool Mesh::LoadMesh(const std::string& Filename)
 	bool Ret = false;
 	Assimp::Importer Importer;
 
-	const aiScene* pScene = Importer.ReadFile(Filename.c_str(), aiProcess_Triangulate |
-		aiProcess_GenSmoothNormals |
-		aiProcess_FlipUVs |
-		aiProcess_CalcTangentSpace);
+	const aiScene* pScene = Importer.ReadFile(Filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+
 	if (pScene) {
 		Ret = InitFromScene(pScene, Filename);
 	}
 	else {
 		printf("Error parsing '%s': '%s'\n", Filename.c_str(), Importer.GetErrorString());
 	}
+
 	return Ret;
 }
 
@@ -123,12 +125,10 @@ void Mesh::InitMesh(unsigned int Index, const aiMesh* paiMesh)
 		const aiVector3D* pPos = &(paiMesh->mVertices[i]);
 		const aiVector3D* pNormal = &(paiMesh->mNormals[i]);
 		const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
-		const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
 
 		Vertex v(Vector3f(pPos->x, pPos->y, pPos->z),
 			Vector2f(pTexCoord->x, pTexCoord->y),
-			Vector3f(pNormal->x, pNormal->y, pNormal->z),
-			Vector3f(pTangent->x, pTangent->y, pTangent->z));
+			Vector3f(pNormal->x, pNormal->y, pNormal->z));
 
 		Vertices.push_back(v);
 	}
@@ -172,7 +172,14 @@ bool Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
 			aiString Path;
 
 			if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-				std::string FullPath = Dir + "/" + Path.data;
+				std::string p(Path.data);
+
+				if (p.substr(0, 2) == ".\\") {
+					p = p.substr(2, p.size() - 2);
+				}
+
+				std::string FullPath = Dir + "/" + p;
+
 				m_Textures[i] = new Texture(GL_TEXTURE_2D, FullPath.c_str());
 
 				if (!m_Textures[i]->Load()) {
@@ -191,19 +198,18 @@ bool Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
 	return Ret;
 }
 
-void Mesh::Render()
+
+void Mesh::Render(IRenderCallbacks* pRenderCallbacks)
 {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
 
 	for (unsigned int i = 0; i < m_Entries.size(); i++) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_Entries[i].VB);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);                 // position
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12); // texture coordinate
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20); // normal
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)32); // tangent
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Entries[i].IB);
 
@@ -213,11 +219,38 @@ void Mesh::Render()
 			m_Textures[MaterialIndex]->Bind(COLOR_TEXTURE_UNIT);
 		}
 
-		glDrawElements(GL_TRIANGLES, m_Entries[i].NumIndices, GL_UNSIGNED_INT, 0);
+		if (pRenderCallbacks) {
+			pRenderCallbacks->DrawStartCB(i);
+		}
+
+		glDrawElements(GL_PATCHES, m_Entries[i].NumIndices, GL_UNSIGNED_INT, 0);
 	}
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
 }
+
+
+/*void Mesh::Render(unsigned int DrawIndex, unsigned int PrimID)
+{
+assert(DrawIndex < m_Entries.size());
+
+glEnableVertexAttribArray(0);
+glEnableVertexAttribArray(1);
+glEnableVertexAttribArray(2);
+
+glBindBuffer(GL_ARRAY_BUFFER, m_Entries[DrawIndex].VB);
+
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Entries[DrawIndex].IB);
+
+glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (const GLvoid*)(PrimID * 3 * sizeof(GLuint)));
+
+glDisableVertexAttribArray(0);
+glDisableVertexAttribArray(1);
+glDisableVertexAttribArray(2);
+}*/

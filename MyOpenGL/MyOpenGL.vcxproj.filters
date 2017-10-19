@@ -27,7 +27,16 @@
     <ClCompile Include="billboard_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="billboard_list.cpp">
+    <ClCompile Include="particle_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ps_update_technique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="random_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lighting_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,10 +44,22 @@
     <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="billboard_list.h">
+    <ClInclude Include="billboard_technique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="billboard_technique.h">
+    <ClInclude Include="particle_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ps_update_technique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="random_texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render_callbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lighting_technique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,6 +71,27 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\billboard.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\ps_update.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\ps_update.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\ps_update.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\lighting.cs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\lighting.es.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\lighting.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\lighting.vs.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
