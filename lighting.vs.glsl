@@ -1,3 +1,4 @@
+// shadertype=glsl
 #version 410 core                                                                               
                                                                                                 
 layout (location = 0) in vec3 Position_VS_in;                                                   

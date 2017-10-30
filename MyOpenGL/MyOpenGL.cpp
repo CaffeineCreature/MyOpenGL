@@ -31,8 +31,8 @@ Tutorial 30 - Basic Tessellation
 #include "ogldev_glut_backend.h"
 #include "mesh.h"
 
-#define WINDOW_WIDTH  1680
-#define WINDOW_HEIGHT 1050
+#define WINDOW_WIDTH  1280
+#define WINDOW_HEIGHT 720
 
 
 class MyOpenGL : public ICallbacks, public OgldevApp
@@ -43,9 +43,9 @@ public:
 	{
 		m_pGameCamera = NULL;
 		m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-		m_directionalLight.AmbientIntensity = 1.0f;
-		m_directionalLight.DiffuseIntensity = 0.01f;
-		m_directionalLight.Direction = Vector3f(1.0f, -1.0, 0.0);
+		m_directionalLight.AmbientIntensity = 0.0f;
+		m_directionalLight.DiffuseIntensity = 1.0f;
+		m_directionalLight.Direction = Vector3f(-1.0f, -1.0f, 0.0f);
 
 		m_persProjInfo.FOV = 60.0f;
 		m_persProjInfo.Height = WINDOW_HEIGHT;
@@ -158,6 +158,8 @@ public:
 			if (m_dispFactor >= 0.01f) {
 				m_dispFactor -= 0.01f;
 			}
+			else
+				m_dispFactor = 0.0f;
 			break;
 
 		case 'z':
@@ -178,7 +180,7 @@ public:
 
 	virtual void PassiveMouseCB(int x, int y)
 	{
-		m_pGameCamera->OnMouse(x, y);
+		//m_pGameCamera->OnMouse(x, y);
 	}
 
 private:

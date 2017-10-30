@@ -82,16 +82,16 @@
     <None Include="..\ps_update.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\lighting.cs.glsl">
+    <None Include="..\lighting.es.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\lighting.es.glsl">
+    <None Include="..\lighting.vs.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\lighting.fs.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\lighting.vs.glsl">
+    <None Include="..\lighting.cs.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

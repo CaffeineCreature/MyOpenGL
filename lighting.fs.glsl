@@ -1,8 +1,8 @@
 #version 410 core                                                                           
                                                                                             
 const int MAX_POINT_LIGHTS = 2;                                                             
-const int MAX_SPOT_LIGHTS = 2;                                                              
-                                                                                            
+const int MAX_SPOT_LIGHTS = 2;
+
 in vec2 TexCoord_FS_in;                                                                     
 in vec3 Normal_FS_in;                                                                       
 in vec3 WorldPos_FS_in;                                                                     
@@ -41,7 +41,7 @@ struct SpotLight
     PointLight Base;                                                                 
     vec3 Direction;                                                                         
     float Cutoff;                                                                           
-};                                                                                          
+};                                                                                         
                                                                                             
 uniform int gNumPointLights;                                                                
 uniform int gNumSpotLights;                                                                 
@@ -107,7 +107,23 @@ vec4 CalcSpotLight(SpotLight l, vec3 Normal)
     else {                                                                                  
         return vec4(0,0,0,0);                                                               
     }                                                                                       
-}                                                                                           
+}
+
+const mat3 ACES = mat3(
+	1.01303,	 0.00610531, -0.014971,
+	0.00769823, 0.998165,   -0.00503203,
+	-0.00284131, 0.00468516,  0.924507
+);
+
+vec4  FilmGrade(vec4 FragLight)
+{
+	if (FragLight.a <= 0.0) {
+		return FragLight;
+	}
+	else {
+		return vec4(ACES * FragLight.rgb, FragLight.a);
+	}
+}
                                                                                             
 void main()                                                                                 
 {                                                                                           
@@ -122,5 +138,5 @@ void main()
         TotalLight += CalcSpotLight(gSpotLights[i], Normal);                                
     }                                                                                       
                                                                                             
-    FragColor = texture(gColorMap, TexCoord_FS_in.xy) * TotalLight;                         
+    FragColor = FilmGrade(texture(gColorMap, TexCoord_FS_in.xy) * TotalLight);                         
 }

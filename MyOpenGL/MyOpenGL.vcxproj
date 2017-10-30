@@ -182,12 +182,12 @@
     </None>
     <None Include="..\billboard.gs" />
     <None Include="..\billboard.vs" />
+    <None Include="..\lighting.cs.glsl" />
+    <None Include="..\lighting.fs.glsl" />
     <None Include="..\ps_update.fs" />
     <None Include="..\ps_update.gs" />
     <None Include="..\ps_update.vs" />
-    <None Include="..\lighting.cs.glsl" />
     <None Include="..\lighting.es.glsl" />
-    <None Include="..\lighting.fs.glsl" />
     <None Include="..\lighting.vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
