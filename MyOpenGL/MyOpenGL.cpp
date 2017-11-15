@@ -27,9 +27,9 @@ Tutorial 30 - Basic Tessellation
 #include "ogldev_util.h"
 #include "ogldev_pipeline.h"
 #include "ogldev_camera.h"
-#include "lighting_technique.h"
+#include "ogldev_basic_lighting.h"
 #include "ogldev_glut_backend.h"
-#include "mesh.h"
+#include "ogldev_basic_mesh.h"
 
 #define WINDOW_WIDTH  1280
 #define WINDOW_HEIGHT 720
@@ -42,58 +42,74 @@ public:
 	MyOpenGL()
 	{
 		m_pGameCamera = NULL;
+		m_pEffect = NULL;
+		m_scale = 0.0f;
 		m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-		m_directionalLight.AmbientIntensity = 0.1f;
+		m_directionalLight.AmbientIntensity = 0.25f;
 		m_directionalLight.DiffuseIntensity = 0.9f;
-		m_directionalLight.Direction = Vector3f(0.0f, 0.0, 1.0);
+		m_directionalLight.Direction = Vector3f(1.0f, 0.0, 0.0);
 
 		m_persProjInfo.FOV = 60.0f;
 		m_persProjInfo.Height = WINDOW_HEIGHT;
 		m_persProjInfo.Width = WINDOW_WIDTH;
 		m_persProjInfo.zNear = 1.0f;
-		m_persProjInfo.zFar = 1000.0f;
+		m_persProjInfo.zFar = 100.0f;
 
-		m_tessellationLevel = 1.0f;
-		m_isWireframe = false;
+		m_pMesh1 = NULL;
+		m_pMesh2 = NULL;
+		m_pMesh3 = NULL;
 	};
 
 	~MyOpenGL()
 	{
+		SAFE_DELETE(m_pEffect);
 		SAFE_DELETE(m_pGameCamera);
-		SAFE_DELETE(m_pMesh);
-
-		glDeleteFramebuffers(1, &frameBuffer);
-		glDeleteFramebuffers(1, &depthBuffer);
-		glDeleteFramebuffers(1, &texColorBuffer);
-
+		SAFE_DELETE(m_pMesh1);
+		SAFE_DELETE(m_pMesh2);
+		SAFE_DELETE(m_pMesh3);
 	}
 
 	bool Init()
 	{
-
-		Vector3f Pos(0.0f, 1.5f, -6.5f);
+		Vector3f Pos(3.0f, 7.0f, -10.0f);
 		Vector3f Target(0.0f, -0.2f, 1.0f);
 		Vector3f Up(0.0, 1.0f, 0.0f);
 
 		m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, Pos, Target, Up);
 
+		m_pEffect = new BasicLightingTechnique();
 
-		if (!m_lightingEffect.Init()) {
+		if (!m_pEffect->Init()) {
 			printf("Error initializing the lighting technique\n");
 			return false;
 		}
 
-		GLint MaxPatchVertices = 0;
-		glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
-		printf("Max supported patch vertices %d\n", MaxPatchVertices);
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		
-		m_lightingEffect.Enable();
-		m_lightingEffect.SetColorTextureUnit(COLOR_TEXTURE_UNIT_INDEX);
-		m_lightingEffect.SetDirectionalLight(m_directionalLight);
-		m_pMesh = new Mesh();
+		m_pEffect->Enable();
 
-		return m_pMesh->LoadMesh("../Content/dragon.obj");
+		m_pEffect->SetColorTextureUnit(COLOR_TEXTURE_UNIT_INDEX);
+		m_pEffect->SetDirectionalLight(m_directionalLight);
+		m_pEffect->SetMatSpecularIntensity(0.0f);
+		m_pEffect->SetMatSpecularPower(0);
+
+		m_pMesh1 = new BasicMesh();
+
+		if (!m_pMesh1->LoadMesh("../Content/phoenix_ugv.md2")) {
+			return false;
+		}
+
+		m_pMesh2 = new BasicMesh();
+
+		if (!m_pMesh2->LoadMesh("../Content/jeep.obj")) {
+			return false;
+		}
+
+		m_pMesh3 = new BasicMesh();
+
+		if (!m_pMesh3->LoadMesh("../Content/hheli.obj")) {
+			return false;
+		}
+
+		return true;
 	}
 
 	void Run()
@@ -103,31 +119,38 @@ public:
 
 	virtual void RenderSceneCB()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		m_scale += 0.01f;
 
 		m_pGameCamera->OnRender();
 
-		Pipeline p;
-		p.WorldPos(-5.0f, 0.0f, 0.0f);
-		p.Scale(1.0f, 1.0f, 1.0f);
-		p.Rotate(0.0f, 180.0f, 0.0f);
-		p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
-		p.SetPerspectiveProj(m_persProjInfo);
-		m_lightingEffect.SetEyeWorldPos(m_pGameCamera->GetPos());
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		m_lightingEffect.SetVP(p.GetVPTrans());
-		m_lightingEffect.SetWorldMatrix(p.GetWorldTrans());
-		m_lightingEffect.SetTessellationLevel(m_tessellationLevel);
-		m_pMesh->Render(NULL);
-		/**/
-		p.WorldPos(5.0f, 0.0f, 0.0f);
-		p.Rotate(0.0f, 90.0f, 0.0f);
-		m_lightingEffect.SetVP(p.GetVPTrans());
-		m_lightingEffect.SetWorldMatrix(p.GetWorldTrans());
-		m_lightingEffect.SetTessellationLevel(1.0f);
-		m_pMesh->Render(NULL);
+		m_pEffect->SetEyeWorldPos(m_pGameCamera->GetPos());
+
+		Pipeline p;
+		p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
+		p.Rotate(0.0f, m_scale, 0.0f);
+		p.SetPerspectiveProj(m_persProjInfo);
+
+		p.Scale(0.1f, 0.1f, 0.1f);
+		p.WorldPos(-6.0f, -2.0f, 10.0f);
+		m_pEffect->SetWVP(p.GetWVPTrans());
+		m_pEffect->SetWorldMatrix(p.GetWorldTrans());
+		m_pMesh1->Render();
+
+		p.Scale(0.01f, 0.01f, 0.01f);
+		p.WorldPos(6.0f, -2.0f, 10.0f);
+		m_pEffect->SetWVP(p.GetWVPTrans());
+		m_pEffect->SetWorldMatrix(p.GetWorldTrans());
+		m_pMesh2->Render();
+
+		p.Scale(0.04f, 0.04f, 0.04f);
+		p.WorldPos(0.0f, 6.0f, 10.0f);
+		m_pEffect->SetWVP(p.GetWVPTrans());
+		m_pEffect->SetWorldMatrix(p.GetWorldTrans());
+		m_pMesh3->Render();
+
 		glutSwapBuffers();
-		/**/
 	}
 
 
@@ -135,48 +158,12 @@ public:
 	virtual void KeyboardCB(OGLDEV_KEY OgldevKey, OGLDEV_KEY_STATE State)
 	{
 		switch (OgldevKey) {
-		case OGLDEV_KEY_1:
-			m_lightingEffect.SetAliasFlags(0x0);
-			break; 
-		case OGLDEV_KEY_2:
-			m_lightingEffect.SetAliasFlags(0x1);
-			break; 
-		case OGLDEV_KEY_3:
-			m_lightingEffect.SetAliasFlags(0x11);
-			break;
-
-		case OGLDEV_KEY_F11:
-			printf("Toggle Fullscreen\n");
-			glutFullScreenToggle();
-		break;
 		case OGLDEV_KEY_ESCAPE:
 		case OGLDEV_KEY_q:
 			GLUTBackendLeaveMainLoop();
 			break;
-
-		case OGLDEV_KEY_PLUS:
-			m_tessellationLevel += 1.0f;
-			break;
-
-		case OGLDEV_KEY_MINUS:
-			if (m_tessellationLevel >= 2.0f) {
-				m_tessellationLevel -= 1.0f;
-			}
-			break;
-
-		case OGLDEV_KEY_z:
-			m_isWireframe = !m_isWireframe;
-
-			if (m_isWireframe) {
-				glPolygonMode(GL_FRONT, GL_LINE);
-			}
-			else {
-				glPolygonMode(GL_FRONT, GL_FILL);
-			}
-			break;
 		default:
-			printf("Camera Key %i :%i\n", OgldevKey, m_pGameCamera->OnKeyboard(OgldevKey));
-			
+			m_pGameCamera->OnKeyboard(OgldevKey);
 		}
 	}
 
@@ -187,18 +174,14 @@ public:
 	}
 
 private:
-
-	GLuint frameBuffer;
-	GLuint texColorBuffer;
-	GLuint depthBuffer;
-
-	LightingTechnique m_lightingEffect;
+	BasicLightingTechnique* m_pEffect;
 	Camera* m_pGameCamera;
+	float m_scale;
 	DirectionalLight m_directionalLight;
-	Mesh* m_pMesh;
+	BasicMesh* m_pMesh1;
+	BasicMesh* m_pMesh2;
+	BasicMesh* m_pMesh3;
 	PersProjInfo m_persProjInfo;
-	float m_tessellationLevel;
-	bool m_isWireframe;
 };
 
 int main(int argc, char** argv)

@@ -102,10 +102,6 @@ public:
 	void SetAliasFlags(int Flags);
 
 private:
-	GLuint frameBuffer;
-	GLuint texColorBuffer;
-	GLuint depthBuffer;
-
 	GLuint m_VPLocation;
 	GLuint m_WorldMatrixLocation;
 	GLuint m_colorTextureLocation;
