@@ -43,18 +43,17 @@ public:
 	{
 		m_pGameCamera = NULL;
 		m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-		m_directionalLight.AmbientIntensity = 0.0f;
-		m_directionalLight.DiffuseIntensity = 1.0f;
-		m_directionalLight.Direction = Vector3f(-1.0f, -1.0f, 0.0f);
+		m_directionalLight.AmbientIntensity = 0.1f;
+		m_directionalLight.DiffuseIntensity = 0.9f;
+		m_directionalLight.Direction = Vector3f(0.0f, 0.0, 1.0);
 
 		m_persProjInfo.FOV = 60.0f;
 		m_persProjInfo.Height = WINDOW_HEIGHT;
 		m_persProjInfo.Width = WINDOW_WIDTH;
 		m_persProjInfo.zNear = 1.0f;
-		m_persProjInfo.zFar = 100.0f;
+		m_persProjInfo.zFar = 1000.0f;
 
-		m_pDisplacementMap = NULL;
-		m_dispFactor = 0.25f;
+		m_tessellationLevel = 1.0f;
 		m_isWireframe = false;
 	};
 
@@ -62,15 +61,22 @@ public:
 	{
 		SAFE_DELETE(m_pGameCamera);
 		SAFE_DELETE(m_pMesh);
+
+		glDeleteFramebuffers(1, &frameBuffer);
+		glDeleteFramebuffers(1, &depthBuffer);
+		glDeleteFramebuffers(1, &texColorBuffer);
+
 	}
 
 	bool Init()
 	{
-		Vector3f Pos(0.0f, 1.0f, -5.0f);
+
+		Vector3f Pos(0.0f, 1.5f, -6.5f);
 		Vector3f Target(0.0f, -0.2f, 1.0f);
 		Vector3f Up(0.0, 1.0f, 0.0f);
 
 		m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, Pos, Target, Up);
+
 
 		if (!m_lightingEffect.Init()) {
 			printf("Error initializing the lighting technique\n");
@@ -80,43 +86,20 @@ public:
 		GLint MaxPatchVertices = 0;
 		glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
 		printf("Max supported patch vertices %d\n", MaxPatchVertices);
-		//glPatchParameteri(GL_PATCH_VERTICES, 3);
-
-		glActiveTexture(GL_TEXTURE4);
-		m_pDisplacementMap = new Texture(GL_TEXTURE_2D, "../Content/heightmap.jpg");
-
-		if (!m_pDisplacementMap->Load()) {
-			return false;
-		}
-
-		m_pDisplacementMap->Bind(DISPLACEMENT_TEXTURE_UNIT);
-
-		glActiveTexture(GL_TEXTURE0);
-		m_pColorMap = new Texture(GL_TEXTURE_2D, "../Content/diffuse.jpg");
-
-		if (!m_pColorMap->Load()) {
-			return false;
-		}
-
-		m_pColorMap->Bind(COLOR_TEXTURE_UNIT);
-
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+		
 		m_lightingEffect.Enable();
-
 		m_lightingEffect.SetColorTextureUnit(COLOR_TEXTURE_UNIT_INDEX);
-		m_lightingEffect.SetDisplacementMapTextureUnit(DISPLACEMENT_TEXTURE_UNIT_INDEX);
 		m_lightingEffect.SetDirectionalLight(m_directionalLight);
-		m_lightingEffect.SetDispFactor(m_dispFactor);
 		m_pMesh = new Mesh();
 
-		return m_pMesh->LoadMesh("../Content/quad2.obj");
+		return m_pMesh->LoadMesh("../Content/dragon.obj");
 	}
-
 
 	void Run()
 	{
 		GLUTBackendRun(this);
 	}
-
 
 	virtual void RenderSceneCB()
 	{
@@ -125,44 +108,63 @@ public:
 		m_pGameCamera->OnRender();
 
 		Pipeline p;
-		p.Scale(2.0f, 2.0f, 2.0f);
+		p.WorldPos(-5.0f, 0.0f, 0.0f);
+		p.Scale(1.0f, 1.0f, 1.0f);
+		p.Rotate(0.0f, 180.0f, 0.0f);
 		p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
 		p.SetPerspectiveProj(m_persProjInfo);
-
-		// render the objects as usual
-		m_lightingEffect.Enable();
-
 		m_lightingEffect.SetEyeWorldPos(m_pGameCamera->GetPos());
+
 		m_lightingEffect.SetVP(p.GetVPTrans());
 		m_lightingEffect.SetWorldMatrix(p.GetWorldTrans());
-		m_lightingEffect.SetDispFactor(m_dispFactor);
-
+		m_lightingEffect.SetTessellationLevel(m_tessellationLevel);
 		m_pMesh->Render(NULL);
-
+		/**/
+		p.WorldPos(5.0f, 0.0f, 0.0f);
+		p.Rotate(0.0f, 90.0f, 0.0f);
+		m_lightingEffect.SetVP(p.GetVPTrans());
+		m_lightingEffect.SetWorldMatrix(p.GetWorldTrans());
+		m_lightingEffect.SetTessellationLevel(1.0f);
+		m_pMesh->Render(NULL);
 		glutSwapBuffers();
+		/**/
 	}
 
-	void KeyboardCB(OGLDEV_KEY OgldevKey, OGLDEV_KEY_STATE State)
+
+
+	virtual void KeyboardCB(OGLDEV_KEY OgldevKey, OGLDEV_KEY_STATE State)
 	{
 		switch (OgldevKey) {
+		case OGLDEV_KEY_1:
+			m_lightingEffect.SetAliasFlags(0x0);
+			break; 
+		case OGLDEV_KEY_2:
+			m_lightingEffect.SetAliasFlags(0x1);
+			break; 
+		case OGLDEV_KEY_3:
+			m_lightingEffect.SetAliasFlags(0x11);
+			break;
+
+		case OGLDEV_KEY_F11:
+			printf("Toggle Fullscreen\n");
+			glutFullScreenToggle();
+		break;
 		case OGLDEV_KEY_ESCAPE:
 		case OGLDEV_KEY_q:
 			GLUTBackendLeaveMainLoop();
 			break;
 
 		case OGLDEV_KEY_PLUS:
-			m_dispFactor += 0.01f;
+			m_tessellationLevel += 1.0f;
 			break;
 
 		case OGLDEV_KEY_MINUS:
-			if (m_dispFactor >= 0.01f) {
-				m_dispFactor -= 0.01f;
+			if (m_tessellationLevel >= 2.0f) {
+				m_tessellationLevel -= 1.0f;
 			}
-			else
-				m_dispFactor = 0.0f;
 			break;
 
-		case 'z':
+		case OGLDEV_KEY_z:
 			m_isWireframe = !m_isWireframe;
 
 			if (m_isWireframe) {
@@ -173,26 +175,29 @@ public:
 			}
 			break;
 		default:
-			m_pGameCamera->OnKeyboard(OgldevKey);
+			printf("Camera Key %i :%i\n", OgldevKey, m_pGameCamera->OnKeyboard(OgldevKey));
+			
 		}
 	}
 
 
 	virtual void PassiveMouseCB(int x, int y)
 	{
-		//m_pGameCamera->OnMouse(x, y);
+		m_pGameCamera->OnMouse(x, y);
 	}
 
 private:
+
+	GLuint frameBuffer;
+	GLuint texColorBuffer;
+	GLuint depthBuffer;
 
 	LightingTechnique m_lightingEffect;
 	Camera* m_pGameCamera;
 	DirectionalLight m_directionalLight;
 	Mesh* m_pMesh;
 	PersProjInfo m_persProjInfo;
-	Texture* m_pDisplacementMap;
-	Texture* m_pColorMap;
-	float m_dispFactor;
+	float m_tessellationLevel;
 	bool m_isWireframe;
 };
 

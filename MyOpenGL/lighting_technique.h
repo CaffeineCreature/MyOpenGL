@@ -84,6 +84,7 @@ public:
 	static const unsigned int MAX_SPOT_LIGHTS = 2;
 
 	LightingTechnique();
+	LightingTechnique(GLuint frameBuffer, GLuint texColorBuffer, GLuint depthBuffer);
 
 	virtual bool Init();
 
@@ -97,20 +98,24 @@ public:
 	void SetEyeWorldPos(const Vector3f& EyeWorldPos);
 	void SetMatSpecularIntensity(float Intensity);
 	void SetMatSpecularPower(float Power);
-	void SetDispFactor(float Factor);
+	void SetTessellationLevel(float TL);
+	void SetAliasFlags(int Flags);
 
 private:
+	GLuint frameBuffer;
+	GLuint texColorBuffer;
+	GLuint depthBuffer;
 
 	GLuint m_VPLocation;
 	GLuint m_WorldMatrixLocation;
 	GLuint m_colorTextureLocation;
-	GLuint m_displacementMapLocation;
 	GLuint m_eyeWorldPosLocation;
 	GLuint m_matSpecularIntensityLocation;
 	GLuint m_matSpecularPowerLocation;
 	GLuint m_numPointLightsLocation;
 	GLuint m_numSpotLightsLocation;
-	GLuint m_dispFactorLocation;
+	GLuint m_TLLocation;
+	GLuint m_AliasFlagsLocation;
 
 	struct {
 		GLuint Color;

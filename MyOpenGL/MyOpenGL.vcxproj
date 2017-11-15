@@ -101,7 +101,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ConfigurationName);$(ProjectDir)\..\..\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;CORE_DB_Magick++_.lib;Common.lib;assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;CORE_DB_Magick++_.lib;MyLibSet.lib;assimp.lib</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -179,16 +179,35 @@
   <ItemGroup>
     <None Include="..\billboard.fs">
       <DeploymentContent>true</DeploymentContent>
+      <FileType>Text</FileType>
     </None>
-    <None Include="..\billboard.gs" />
-    <None Include="..\billboard.vs" />
-    <None Include="..\lighting.cs.glsl" />
-    <None Include="..\lighting.fs.glsl" />
-    <None Include="..\ps_update.fs" />
-    <None Include="..\ps_update.gs" />
-    <None Include="..\ps_update.vs" />
-    <None Include="..\lighting.es.glsl" />
-    <None Include="..\lighting.vs.glsl" />
+    <None Include="..\billboard.gs">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\billboard.vs">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\lighting.cs.glsl">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\lighting.fs.glsl">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\ps_update.fs">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\ps_update.gs">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\ps_update.vs">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\lighting.es.glsl">
+      <FileType>Text</FileType>
+    </None>
+    <None Include="..\lighting.vs.glsl">
+      <FileType>Text</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
