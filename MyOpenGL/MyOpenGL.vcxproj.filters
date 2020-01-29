@@ -15,84 +15,50 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{24b073fa-263b-4ffb-bb54-998c52d9dd05}</UniqueIdentifier>
+      <Extensions>fs;gs;glsl;vs</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyOpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mesh.cpp">
+    <ClCompile Include="blur_tech.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="billboard_technique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="particle_system.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ps_update_technique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="random_texture.cpp">
+    <ClCompile Include="geom_pass_tech.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="lighting_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ssao_tech.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mesh.h">
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="blur_tech.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="billboard_technique.h">
+    <ClInclude Include="engine_common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="particle_system.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ps_update_technique.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="random_texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render_callbacks.h">
+    <ClInclude Include="geom_pass_tech.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lighting_technique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\billboard.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\billboard.gs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\billboard.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\ps_update.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\ps_update.gs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\ps_update.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\lighting.es.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\lighting.vs.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\lighting.fs.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\lighting.cs.glsl">
-      <Filter>Shaders</Filter>
-    </None>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ssao_tech.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

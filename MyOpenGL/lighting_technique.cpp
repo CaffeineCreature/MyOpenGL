@@ -1,28 +1,13 @@
-/*
-
-Copyright 2011 Etay Meiri
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include <limits.h>
 #include <string.h>
 
+#include "engine_common.h"
 #include "ogldev_math_3d.h"
 #include "ogldev_util.h"
 #include "lighting_technique.h"
 
+#define AO_TEXTURE_UNIT               GL_TEXTURE3
+#define AO_TEXTURE_UNIT_INDEX         3
 
 LightingTechnique::LightingTechnique()
 {
@@ -34,19 +19,12 @@ bool LightingTechnique::Init()
 		return false;
 	}
 
-	if (!AddShader(GL_VERTEX_SHADER, "lighting.vs.glsl")) {
+	if (!AddShader(GL_VERTEX_SHADER, "lighting.vs")) {
 		return false;
 	}
 
-	if (!AddShader(GL_TESS_CONTROL_SHADER, "lighting.cs.glsl")) {
-		return false;
-	}
 
-	if (!AddShader(GL_TESS_EVALUATION_SHADER, "lighting.es.glsl")) {
-		return false;
-	}
-
-	if (!AddShader(GL_FRAGMENT_SHADER, "lighting.fs.glsl")) {
+	if (!AddShader(GL_FRAGMENT_SHADER, "lighting.fs")) {
 		return false;
 	}
 
@@ -54,9 +32,11 @@ bool LightingTechnique::Init()
 		return false;
 	}
 
-	m_VPLocation = GetUniformLocation("gVP");
+	m_shaderTypeLocation = GetUniformLocation("gShaderType");
+	m_WVPLocation = GetUniformLocation("gWVP");
 	m_WorldMatrixLocation = GetUniformLocation("gWorld");
 	m_colorTextureLocation = GetUniformLocation("gColorMap");
+	m_aoTextureLocation = GetUniformLocation("gAOMap");
 	m_eyeWorldPosLocation = GetUniformLocation("gEyeWorldPos");
 	m_dirLightLocation.Color = GetUniformLocation("gDirectionalLight.Base.Color");
 	m_dirLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.Base.AmbientIntensity");
@@ -66,13 +46,14 @@ bool LightingTechnique::Init()
 	m_matSpecularPowerLocation = GetUniformLocation("gSpecularPower");
 	m_numPointLightsLocation = GetUniformLocation("gNumPointLights");
 	m_numSpotLightsLocation = GetUniformLocation("gNumSpotLights");
-	m_TLLocation = GetUniformLocation("gTessellationLevel");
-	m_AliasFlagsLocation = GetUniformLocation("gAliasFlags");
+	m_screenSizeLocation = GetUniformLocation("gScreenSize");
 
-	if (m_dirLightLocation.AmbientIntensity == INVALID_UNIFORM_LOCATION ||
-		m_VPLocation == INVALID_UNIFORM_LOCATION ||
+	if (m_shaderTypeLocation == INVALID_UNIFORM_LOCATION ||
+		m_dirLightLocation.AmbientIntensity == INVALID_UNIFORM_LOCATION ||
+		m_WVPLocation == INVALID_UNIFORM_LOCATION ||
 		m_WorldMatrixLocation == INVALID_UNIFORM_LOCATION ||
 		m_colorTextureLocation == INVALID_UNIFORM_LOCATION ||
+		m_aoTextureLocation == INVALID_UNIFORM_LOCATION ||
 		m_eyeWorldPosLocation == INVALID_UNIFORM_LOCATION ||
 		m_dirLightLocation.Color == INVALID_UNIFORM_LOCATION ||
 		m_dirLightLocation.DiffuseIntensity == INVALID_UNIFORM_LOCATION ||
@@ -80,12 +61,12 @@ bool LightingTechnique::Init()
 		m_matSpecularIntensityLocation == INVALID_UNIFORM_LOCATION ||
 		m_matSpecularPowerLocation == INVALID_UNIFORM_LOCATION ||
 		m_numPointLightsLocation == INVALID_UNIFORM_LOCATION ||
-		m_numSpotLightsLocation == INVALID_UNIFORM_LOCATION ||
-		m_TLLocation == INVALID_UNIFORM_LOCATION) {
-		return false;
+		m_screenSizeLocation == INVALID_UNIFORM_LOCATION ||
+		m_numSpotLightsLocation == INVALID_UNIFORM_LOCATION) {
+		//     return false;
 	}
 
-	for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_pointLightsLocation); i++) {
+	for (uint i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_pointLightsLocation); i++) {
 		char Name[128];
 		memset(Name, 0, sizeof(Name));
 		SNPRINTF(Name, sizeof(Name), "gPointLights[%d].Base.Color", i);
@@ -120,7 +101,7 @@ bool LightingTechnique::Init()
 		}
 	}
 
-	for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_spotLightsLocation); i++) {
+	for (uint i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_spotLightsLocation); i++) {
 		char Name[128];
 		memset(Name, 0, sizeof(Name));
 		SNPRINTF(Name, sizeof(Name), "gSpotLights[%d].Base.Base.Color", i);
@@ -163,32 +144,35 @@ bool LightingTechnique::Init()
 		}
 	}
 
+	Enable();
+
+	glUniform1i(m_aoTextureLocation, AO_TEXTURE_UNIT_INDEX);
+	glUniform1i(m_colorTextureLocation, COLOR_TEXTURE_UNIT_INDEX);
+
 	return true;
 }
 
-void LightingTechnique::SetAliasFlags(int Flags) {
-	glUniform1i(m_AliasFlagsLocation, Flags);
-}
-
-void LightingTechnique::SetVP(const Matrix4f& VP)
+void LightingTechnique::SetShaderType(int ShaderType)
 {
-	glUniformMatrix4fv(m_VPLocation, 1, GL_TRUE, (const GLfloat*)VP.m);
+	glUniform1i(m_shaderTypeLocation, ShaderType);
 }
 
-
-void LightingTechnique::SetWorldMatrix(const Matrix4f& WorldInverse)
+void LightingTechnique::SetWVP(const Matrix4f & WVP)
 {
-	glUniformMatrix4fv(m_WorldMatrixLocation, 1, GL_TRUE, (const GLfloat*)WorldInverse.m);
+	glUniformMatrix4fv(m_WVPLocation, 1, GL_TRUE, (const GLfloat*)WVP);
 }
 
-
-void LightingTechnique::SetColorTextureUnit(unsigned int TextureUnit)
+void LightingTechnique::SetWorldMatrix(const Matrix4f & WVP)
 {
-	glUniform1i(m_colorTextureLocation, TextureUnit);
+	glUniformMatrix4fv(m_WorldMatrixLocation, 1, GL_TRUE, (const GLfloat*)WVP);
 }
 
+void LightingTechnique::BindAOBuffer(IOBuffer & aoBuffer)
+{
+	aoBuffer.BindForReading(AO_TEXTURE_UNIT);
+}
 
-void LightingTechnique::SetDirectionalLight(const DirectionalLight& Light)
+void LightingTechnique::SetDirectionalLight(const DirectionalLight & Light)
 {
 	glUniform3f(m_dirLightLocation.Color, Light.Color.x, Light.Color.y, Light.Color.z);
 	glUniform1f(m_dirLightLocation.AmbientIntensity, Light.AmbientIntensity);
@@ -198,26 +182,11 @@ void LightingTechnique::SetDirectionalLight(const DirectionalLight& Light)
 	glUniform1f(m_dirLightLocation.DiffuseIntensity, Light.DiffuseIntensity);
 }
 
-void LightingTechnique::SetEyeWorldPos(const Vector3f& EyeWorldPos)
-{
-	glUniform3f(m_eyeWorldPosLocation, EyeWorldPos.x, EyeWorldPos.y, EyeWorldPos.z);
-}
-
-void LightingTechnique::SetMatSpecularIntensity(float Intensity)
-{
-	glUniform1f(m_matSpecularIntensityLocation, Intensity);
-}
-
-void LightingTechnique::SetMatSpecularPower(float Power)
-{
-	glUniform1f(m_matSpecularPowerLocation, Power);
-}
-
-void LightingTechnique::SetPointLights(unsigned int NumLights, const PointLight* pLights)
+void LightingTechnique::SetPointLights(uint NumLights, const PointLight * pLights)
 {
 	glUniform1i(m_numPointLightsLocation, NumLights);
 
-	for (unsigned int i = 0; i < NumLights; i++) {
+	for (uint i = 0; i < NumLights; i++) {
 		glUniform3f(m_pointLightsLocation[i].Color, pLights[i].Color.x, pLights[i].Color.y, pLights[i].Color.z);
 		glUniform1f(m_pointLightsLocation[i].AmbientIntensity, pLights[i].AmbientIntensity);
 		glUniform1f(m_pointLightsLocation[i].DiffuseIntensity, pLights[i].DiffuseIntensity);
@@ -228,11 +197,11 @@ void LightingTechnique::SetPointLights(unsigned int NumLights, const PointLight*
 	}
 }
 
-void LightingTechnique::SetSpotLights(unsigned int NumLights, const SpotLight* pLights)
+void LightingTechnique::SetSpotLights(uint NumLights, const SpotLight * pLights)
 {
 	glUniform1i(m_numSpotLightsLocation, NumLights);
 
-	for (unsigned int i = 0; i < NumLights; i++) {
+	for (uint i = 0; i < NumLights; i++) {
 		glUniform3f(m_spotLightsLocation[i].Color, pLights[i].Color.x, pLights[i].Color.y, pLights[i].Color.z);
 		glUniform1f(m_spotLightsLocation[i].AmbientIntensity, pLights[i].AmbientIntensity);
 		glUniform1f(m_spotLightsLocation[i].DiffuseIntensity, pLights[i].DiffuseIntensity);
@@ -247,7 +216,22 @@ void LightingTechnique::SetSpotLights(unsigned int NumLights, const SpotLight* p
 	}
 }
 
-void LightingTechnique::SetTessellationLevel(float TL)
+void LightingTechnique::SetEyeWorldPos(const Vector3f & EyeWorldPos)
 {
-	glUniform1f(m_TLLocation, TL);
+	glUniform3fv(m_eyeWorldPosLocation, 1, (const GLfloat*)EyeWorldPos);
+}
+
+void LightingTechnique::SetMatSpecularIntensity(float Intensity)
+{
+	glUniform1f(m_matSpecularIntensityLocation, Intensity);
+}
+
+void LightingTechnique::SetMatSpecularPower(float Power)
+{
+	glUniform1f(m_matSpecularPowerLocation, Power);
+}
+
+void LightingTechnique::SetScreenSize(uint Width, uint Height)
+{
+	glUniform2f(m_screenSizeLocation, (float)Width, (float)Height);
 }

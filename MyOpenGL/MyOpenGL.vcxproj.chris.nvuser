@@ -5,5 +5,4 @@
     <SettingsPointModel DefinitionId="9e01db22-a7ae-4ca9-b2a8-6a4e66dd5cb7" DisplayName="Synchronization">
         <Property Name="ExtensionsToSynchronize" Value="" />
     </SettingsPointModel>
-    <SettingsPointModel DefinitionId="4ae4108e-96a4-491d-99d1-3697cd027eb7" DisplayName="Shader Compilation" />
 </ProjectSettingsModel>

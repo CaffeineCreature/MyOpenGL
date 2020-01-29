@@ -16,27 +16,44 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RANDOM_TEXTURE_H
-#define	RANDOM_TEXTURE_H
+#include <limits.h>
+#include <string.h>
 
-#include <GL/glew.h>
+#include "null_technique.h"
+#include "ogldev_util.h"
 
-class RandomTexture
+NullTechnique::NullTechnique()
 {
-public:
-	RandomTexture();
+}
 
-	~RandomTexture();
+bool NullTechnique::Init()
+{
+	if (!Technique::Init()) {
+		return false;
+	}
 
-	bool InitRandomTexture(unsigned int Size);
+	if (!AddShader(GL_VERTEX_SHADER, "null_technique.vs")) {
+		return false;
+	}
 
-	void Bind(GLenum TextureUnit);
+	if (!AddShader(GL_FRAGMENT_SHADER, "null_technique.fs")) {
+		return false;
+	}
 
-private:
-	GLuint m_textureObj;
-};
+	if (!Finalize()) {
+		return false;
+	}
 
+	m_WVPLocation = GetUniformLocation("gWVP");
 
+	if (m_WVPLocation == INVALID_UNIFORM_LOCATION) {
+		return false;
+	}
 
-#endif	/* RANDOM_TEXTURE_H */
+	return true;
+}
 
+void NullTechnique::SetWVP(const Matrix4f& WVP)
+{
+	glUniformMatrix4fv(m_WVPLocation, 1, GL_TRUE, (const GLfloat*)WVP.m);
+}

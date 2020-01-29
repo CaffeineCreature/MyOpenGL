@@ -15,32 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BILLBOARD_TECHNIQUE_H
-#define	BILLBOARD_TECHNIQUE_H
+#ifndef DS_DIR_LIGHT_PASS_TECH_H
+#define DS_DIR_LIGHT_PASS_TECH_H
 
-#include "technique.h"
-#include "ogldev_math_3d.h"
+#include "ds_light_pass_tech.h"
+#include "ogldev_lights_common.h"
 
-class BillboardTechnique : public Technique
-{
+class DSDirLightPassTech : public DSLightPassTech {
 public:
 
-	BillboardTechnique();
+	DSDirLightPassTech();
 
 	virtual bool Init();
 
-	void SetVP(const Matrix4f& VP);
-	void SetCameraPosition(const Vector3f& Pos);
-	void SetColorTextureUnit(unsigned int TextureUnit);
-	void SetBillboardSize(float BillboardSize);
+	void SetDirectionalLight(const DirectionalLight& Light);
 
 private:
 
-	GLuint m_VPLocation;
-	GLuint m_cameraPosLocation;
-	GLuint m_colorMapLocation;
-	GLuint m_billboardSizeLocation;
+	struct {
+		GLuint Color;
+		GLuint AmbientIntensity;
+		GLuint DiffuseIntensity;
+		GLuint Direction;
+	} m_dirLightLocation;
 };
 
-#endif	/* BILLBOARD_TECHNIQUE_H */
-
+#endif // !DS_DIR_LIGHT_PASS_TECH_H

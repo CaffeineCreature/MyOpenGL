@@ -1,0 +1,25 @@
+HUD frame time nsec:,16660000
+
+Range Index,Elapsed Time, First Event,Last Event
+0,42976,1,1
+1,72352,44,44
+2,23776,50,50
+3,19232,56,56
+4,21312,62,62
+5,19168,68,68
+6,15872,74,74
+7,10944480,78,78
+
+Range Index,Elapsed Time, First Event,Last Event
+0,72352,44,44
+1,23616,50,50
+2,19584,56,56
+3,20960,62,62
+4,18496,68,68
+5,15360,74,74
+
+Range Index,Elapsed Time, First Event,Last Event,gpu__draw_count,Cycles,zrop__lts_read_utilization_pct,Cycles,DispatchLaunchDimZAvg,Cycles,tex__busy_pct_avg,Cycles,smsp__inst_executed_cs_sum,Cycles,tex__sm_utilization_pct,Cycles,ia__prim_count,Cycles,dram__write_pct,Cycles,DispatchLaunchDimXAvg,Cycles,gpu__shaded_fragments,Cycles,lts__request_total_sectors_hitrate_pct,Cycles,sm__tex_utilization_pct,Cycles,gpu__dispatch_count,Cycles,ltc__sol_pct,Cycles,DispatchLaunchDimYAvg,Cycles,DispatchTotalThreads,Cycles,DispatchKernelDimXAvg,Cycles,DispatchKernelDimYAvg,Cycles,DispatchKernelDimZAvg,Cycles,crop__sol_pct,Cycles,sm__active_cycles_vs_pct,Cycles,sm__active_cycles_tcs_pct,Cycles,sm__active_cycles_tes_pct,Cycles,sm__active_cycles_gs_pct,Cycles,sm__active_cycles_fs_pct,Cycles,sm__active_cycles_cs_pct,Cycles,ia__sol_pct,Cycles,ia__busy_pct_avg,Cycles,lts__request_tex_write_utilization_pct,Cycles,sm__sol_pct,Cycles,sm__busy_pct_avg,Cycles,tex__sol_pct,Cycles,lts__busy_pct_avg,Cycles,crop__busy_pct_avg,Cycles,crop__lts_write_utilization_pct,Cycles,zrop__sol_pct,Cycles,zrop__busy_pct_avg,Cycles,fbpa__sol_pct,Cycles,fbpa__busy_pct_avg,Cycles,lts__request_ia_read_utilization_pct,Cycles,lts__request_tex_read_utilization_pct,Cycles,xfb__lts_utilization_pct,Cycles,zrop__lts_write_utilization_pct,Cycles,crop__lts_read_utilization_pct,Cycles,dram__read_pct,Cycles
+0,887264,44,74,6,1,0.408457,1,0,1,19.0145,1,0,1,1.15353,1,1069,1,1.08652,1,0,1,432187,1,84.2245,1,1.55934,1,0,1,3.33163,1,0,1,0,1,0,1,0,1,0,1,2.63099,1,2.87167,1,0,1,0,1,0,1,14.3992,1,0,1,0.164286,1,2.90129,1,0,1,5.22609,1,29.5665,1,2.02337,1,15.0753,1,2.63099,1,1.04711,1,0.854987,1,13.1726,1,2.03752,1,79.1907,1,0.0541502,1,2.48221,1,0,1,0.641545,1,0.291341,1,0.950996,1
+
+Range Index,Elapsed Time, First Event,Last Event,gpu__draw_count,Cycles,zrop__lts_read_utilization_pct,Cycles,DispatchLaunchDimZAvg,Cycles,tex__busy_pct_avg,Cycles,smsp__inst_executed_cs_sum,Cycles,tex__sm_utilization_pct,Cycles,ia__prim_count,Cycles,dram__write_pct,Cycles,DispatchLaunchDimXAvg,Cycles,gpu__shaded_fragments,Cycles,lts__request_total_sectors_hitrate_pct,Cycles,sm__tex_utilization_pct,Cycles,gpu__dispatch_count,Cycles,ltc__sol_pct,Cycles,DispatchLaunchDimYAvg,Cycles,DispatchTotalThreads,Cycles,DispatchKernelDimXAvg,Cycles,DispatchKernelDimYAvg,Cycles,DispatchKernelDimZAvg,Cycles,crop__sol_pct,Cycles,sm__active_cycles_vs_pct,Cycles,sm__active_cycles_tcs_pct,Cycles,sm__active_cycles_tes_pct,Cycles,sm__active_cycles_gs_pct,Cycles,sm__active_cycles_fs_pct,Cycles,sm__active_cycles_cs_pct,Cycles,ia__sol_pct,Cycles,ia__busy_pct_avg,Cycles,lts__request_tex_write_utilization_pct,Cycles,sm__sol_pct,Cycles,sm__busy_pct_avg,Cycles,tex__sol_pct,Cycles,lts__busy_pct_avg,Cycles,crop__busy_pct_avg,Cycles,crop__lts_write_utilization_pct,Cycles,zrop__sol_pct,Cycles,zrop__busy_pct_avg,Cycles,fbpa__sol_pct,Cycles,fbpa__busy_pct_avg,Cycles,lts__request_ia_read_utilization_pct,Cycles,lts__request_tex_read_utilization_pct,Cycles,xfb__lts_utilization_pct,Cycles,zrop__lts_write_utilization_pct,Cycles,crop__lts_read_utilization_pct,Cycles,dram__read_pct,Cycles
+0,19488,56,56,1,1,0.696388,1,0,1,17.2245,1,0,1,0.688915,1,78,1,0.642567,1,0,1,5345,1,88.3711,1,0.988619,1,0,1,4.64801,1,0,1,0,1,0,1,0,1,0,1,2.7682,1,6.27759,1,0,1,0,1,0,1,22.4616,1,0,1,0.465757,1,3.35426,1,0,1,5.45259,1,40.8578,1,2.8804,1,23.2173,1,2.7682,1,0.787504,1,1.25068,1,9.89044,1,1.68732,1,100,1,0.140471,1,3.72437,1,0,1,0.959974,1,0.436056,1,1.04475,1

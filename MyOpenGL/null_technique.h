@@ -15,14 +15,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RENDER_CALLBACKS_H
-#define	RENDER_CALLBACKS_H
+#ifndef NULL_TECHNIQUE_H
+#define	NULL_TECHNIQUE_H
 
-class IRenderCallbacks
-{
+#include "technique.h"
+#include "ogldev_math_3d.h"
+
+class NullTechnique : public Technique {
 public:
-	virtual void DrawStartCB(unsigned int DrawIndex) = 0;
+
+	NullTechnique();
+
+	virtual bool Init();
+
+	void SetWVP(const Matrix4f& WVP);
+
+private:
+
+	GLuint m_WVPLocation;
 };
 
-#endif	/* RENDER_CALLBACKS_H */
-
+#endif // NULL_TECHNIQUE_H

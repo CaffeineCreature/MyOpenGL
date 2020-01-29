@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir)\..\..\Include;$(ProjectDir)\..\..\Include\assimp;$(ProjectDir)\..\..\Include\ATB;$(ProjectDir)\..\..\Include\GL;$(ProjectDir)\..\..\Include\GLFW;$(ProjectDir)\..\..\Include\ImageMagick-6;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\Include;$(ProjectDir)\..\..\Include\assimp;$(ProjectDir)\..\..\Include\ATB;$(ProjectDir)\..\..\Include\GL;$(ProjectDir)\..\..\Include\GLFW;$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..\..\Common\FreetypeGL;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -94,14 +94,20 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..\..\Include\assimp;$(ProjectDir)\..\..\Include\ATB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\Include\ImageMagick-6;$(ProjectDir)\..;$(ProjectDir)\..\..\Common\FreetypeGL;$(ProjectDir)\..\..\Common\ATB</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointExceptions>
+      </FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ConfigurationName);$(ProjectDir)\..\..\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);glew32.lib;CORE_DB_Magick++_.lib;MyLibSet.lib;assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);glfx_debug.lib;glew32.lib;CORE_DB_Magick++_.lib;MyLibSet.lib;assimp.lib;glfw3.lib;glfw3dll.lib;opengl32.lib</AdditionalDependencies>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -159,57 +165,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="billboard_technique.cpp" />
+    <ClCompile Include="blur_tech.cpp" />
+    <ClCompile Include="geom_pass_tech.cpp" />
     <ClCompile Include="lighting_technique.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="MyOpenGL.cpp" />
-    <ClCompile Include="particle_system.cpp" />
-    <ClCompile Include="ps_update_technique.cpp" />
-    <ClCompile Include="random_texture.cpp" />
+    <ClCompile Include="ssao_tech.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="billboard_technique.h" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="blur_tech.h" />
+    <ClInclude Include="engine_common.h" />
+    <ClInclude Include="geom_pass_tech.h" />
     <ClInclude Include="lighting_technique.h" />
     <ClInclude Include="mesh.h" />
-    <ClInclude Include="particle_system.h" />
-    <ClInclude Include="ps_update_technique.h" />
-    <ClInclude Include="random_texture.h" />
-    <ClInclude Include="render_callbacks.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\billboard.fs">
-      <DeploymentContent>true</DeploymentContent>
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\billboard.gs">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\billboard.vs">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\lighting.cs.glsl">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\lighting.fs.glsl">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\ps_update.fs">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\ps_update.gs">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\ps_update.vs">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\lighting.es.glsl">
-      <FileType>Text</FileType>
-    </None>
-    <None Include="..\lighting.vs.glsl">
-      <FileType>Text</FileType>
-    </None>
+    <ClInclude Include="ssao_tech.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\glfx.redist.0.75\build\native\glfx.redist.targets" Condition="Exists('..\packages\glfx.redist.0.75\build\native\glfx.redist.targets')" />
+    <Import Project="..\packages\glfx.0.75\build\native\glfx.targets" Condition="Exists('..\packages\glfx.0.75\build\native\glfx.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\glfx.redist.0.75\build\native\glfx.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glfx.redist.0.75\build\native\glfx.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\glfx.0.75\build\native\glfx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glfx.0.75\build\native\glfx.targets'))" />
+  </Target>
 </Project>
